@@ -45,7 +45,7 @@ All outputs are automatically generated in dedicated folders.
 ```bash
 .
 ├── main.py                     # Full pipeline execution
-├── logger_module.py            # Enterprise-grade rotating logger
+├── logger_module.py            # Rotating logger
 ├── cluster_similarity.py       # Custom RBF ClusterSimilarity transformer
 ├── requirements.txt
 ├── README.md
