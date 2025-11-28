@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Project outputs (generated on run → ignore)
+dataset/
+logs/
+models/
+reports/
+*.pkl
+*.joblib
+*.xlsx
+*.csv
+*.log
+
+# BUT keep these two example images for README
+!reports/*_example.png
+
+# IDEs & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Your temp files
+standard_scaler_clone.py
+pipeline_test_*.py
