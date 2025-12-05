@@ -299,8 +299,11 @@ class PipelineArtifacts:
     preprocessor: object
     cluster_sim: object
 
-def main():
-    """Main ML pipeline: load data, preprocess, and prepare for modeling."""
+def run_pipeline():
+    """
+    Run the data ingestion + feature engineering + preprocessing pipeline.
+    Returns all artifacts ready for training.
+    """
     df = load_csv(get_csv_path())
     
     logger.info(f"Dataset shape: {df.shape}, missing values: {df.isna().sum().sum()}")
@@ -384,13 +387,21 @@ def create_reports(y_test, y_pred, mse, r2, base_dir: Path):
 
 
 # -----------------------------
-# EXECUTION ENTRY POINT
+# MAIN 
 # -----------------------------
-if __name__ == "__main__":
+
+def main():
+    """
+    Full training workflow:
+    - preprocessing
+    - base RF training
+    - RF fine-tuning
+    - model export + reports
+    """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # ---- Main Pipeline ----
-    art = main()
+    art = run_pipeline()
 
     # ---- Base Random Forest ----
     base = train_rf_model(
@@ -411,6 +422,7 @@ if __name__ == "__main__":
 
     mse_best = mean_squared_error(art.y_test, y_pred_best)
     r2_best = r2_score(art.y_test, y_pred_best)
+
     logger.info(f"Fine-tuned RF → MSE: {mse_best:.2f}, R²: {r2_best:.4f}")
 
     # ---- Feature importances ----
@@ -427,16 +439,15 @@ if __name__ == "__main__":
         base_dir=BASE_DIR
     )
 
-    # ---- Save fine-tuned predictions ----
+    # ---- Save predictions ----
     predictions_dir = BASE_DIR / "reports"
     predictions_dir.mkdir(parents=True, exist_ok=True)
     joblib.dump(
         {'y_test': art.y_test, 'y_pred': y_pred_best},
         predictions_dir / f"predictions_{timestamp}.pkl"
     )
-    logger.info(f"Predictions saved: predictions_{timestamp}.pkl")
 
-    # ---- Creation reports (plots + Excel) ----
+    # ---- Reports (plots + Excel) ----
     create_reports(
         y_test=art.y_test,
         y_pred=y_pred_best,
@@ -444,3 +455,9 @@ if __name__ == "__main__":
         r2=r2_best,
         base_dir=BASE_DIR
     )
+
+# -----------------------------
+# ENTRY POINT
+# -----------------------------
+if __name__ == "__main__":
+    main()
